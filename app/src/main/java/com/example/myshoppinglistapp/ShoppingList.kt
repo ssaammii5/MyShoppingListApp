@@ -1,5 +1,6 @@
 package com.example.myshoppinglistapp
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
@@ -21,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -58,7 +61,7 @@ fun ShoppingListApp(modifier: Modifier) {
                 .padding(16.dp)
         ) {
             items(sItems) {
-
+                ShoppingListItem(item = it, {}, {})
             }
         }
     }
@@ -117,8 +120,37 @@ fun ShoppingListApp(modifier: Modifier) {
     }
 }
 
+
+@Composable
+fun ShoppingListItem(
+    item: ShoppingItem,
+    onEditClick : () -> Unit,
+    onDeleteClick : () -> Unit,
+){
+    Row(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+            .border(
+                width = 2.dp,
+                color = Color.Blue,
+                shape = RoundedCornerShape(12)
+            ),
+    ){
+        Text(text=item.name, modifier = Modifier.padding(8.dp))
+        Text(text=item.quantity.toString(), modifier = Modifier.padding(8.dp))
+    }
+}
+
+
 @Preview(showBackground = true)
 @Composable
 fun ShoppingListAppPreview() {
     ShoppingListApp(modifier = Modifier)
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ShoppingListItemPreview() {
+    ShoppingListItem(item = ShoppingItem(1, "Item 1", 2), onEditClick = {}, onDeleteClick = {})
 }
