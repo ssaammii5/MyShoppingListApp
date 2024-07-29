@@ -68,8 +68,24 @@ fun ShoppingListApp(modifier: Modifier) {
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            items(sItems) {
-                ShoppingListItem(item = it, {}, {})
+            items(sItems) { item ->
+                if (item.isEditing) {
+                    ShoppingItemEditor(item = item, onEditComplete = { editedName, editedQuantity ->
+                        sItems = sItems.map { it.copy(isEditing = false) }
+                        val editedItem = sItems.find { it.id == item.id }
+                        editedItem?.let {
+                            it.name = editedName
+                            it.quantity = editedQuantity
+                        }
+                    })
+                } else {
+                    ShoppingListItem(item = item,
+                        onEditClick = {
+                            sItems = sItems.map { it.copy(isEditing = (it.id == item.id)) }
+                        }, onDeleteClick = {
+                            sItems = sItems - item
+                        })
+                }
             }
         }
     }
@@ -137,9 +153,15 @@ fun ShoppingItemEditor(item: ShoppingItem, onEditComplete: (String, Int) -> Unit
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(8.dp)
             .background(Color.White)
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly
+            .border(
+                width = 2.dp,
+                color = Color.Blue,
+                shape = RoundedCornerShape(12)
+            ),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Column {
             BasicTextField(
@@ -160,8 +182,8 @@ fun ShoppingItemEditor(item: ShoppingItem, onEditComplete: (String, Int) -> Unit
             )
         }
         Button(onClick = {
-            isEditing=false
-            onEditComplete(editedName, editedQuantity.toIntOrNull() ? 1)
+            isEditing = false
+            onEditComplete(editedName, editedQuantity.toIntOrNull() ?: 1)
         }) {
             Text(text = "Save")
         }
@@ -184,6 +206,8 @@ fun ShoppingListItem(
                 color = Color.Blue,
                 shape = RoundedCornerShape(12)
             ),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(text = item.name, modifier = Modifier.padding(8.dp))
         Text(text = "Qty: ${item.quantity}", modifier = Modifier.padding(8.dp))
